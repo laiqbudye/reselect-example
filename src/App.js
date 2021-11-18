@@ -1,25 +1,66 @@
-import logo from './logo.svg';
 import './App.css';
+import { connect } from 'react-redux';
+import { filteredUsersSelector, usersSelector } from './selectors';
 
-function App() {
+function App(props) {
+  const userchangeHandler = (e) => {
+    props.dispatch({
+      type: "CHANGE_USERNAME",
+      payload: e.target.value
+    })
+  }
+
+  const searchChangeHandler = (e) => {
+    props.dispatch({
+      type: "CHANGE_SEARCH",
+      payload: e.target.value
+    })
+  }
+
+  const addHandler = () => {
+    props.dispatch({
+      type: "ADD_USER"
+    })
+  }
+
+  console.log("filtered arr", props.filteredUsers)
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div>
+      <input type="text"
+        name="username"
+        id="username"
+        placeholder="Enter Username"
+        onChange={userchangeHandler}
+        value={props.username}
+      />
+      <button onClick={addHandler}>Add User</button>
+      <input type="text"
+        name="search"
+        id="search"
+        placeholder="Enter search query"
+        onChange={searchChangeHandler}
+        value={props.search}
+      />
+      <ul>
+        {props.users.map((user, i) => (
+          <li key={i}>{user}</li>
+        ))}
+      </ul>
     </div>
   );
 }
 
-export default App;
+const mapStateToProps = (state) => {
+  console.log(state)
+
+  return {
+    users: usersSelector(state),   // state.users.users,
+    username: state.users.username,
+    search: state.users.search,
+    filteredUsers: filteredUsersSelector(state)
+  }
+}
+
+
+export default connect(mapStateToProps)(App);
